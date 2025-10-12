@@ -276,9 +276,9 @@ return {get = function(bolt)
         print("lost grove")
         local x,y,z = bolt.playerposition():get()
         print("{ x = " .. math.floor(x/512) .. ", y = " .. math.floor(y / 512) .. ", z = " .. math.floor(z / 512) .. ", floor = 1 },")
-        return create(bolt, "lostgrove") 
+        return create(bolt, "lostgrove")
       end
-      if w == 14 then print("desert") return create(bolt, "eastdesert") end -- there is a new lost grove clue that also matches this 
+      if w == 14 then return create(bolt, "eastdesert") end
       return nil
     end,
     ["\x00\x00\x01\x00\x00\x00\x01\x00\xff\xff\xff\xdd\xff\xff\xff\xdd\xff\xff\xff\x22\xff\xff\xff\x22\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01\x00"] = function (bolt, event)

@@ -30,6 +30,7 @@ local function buildMatrix()
 end
 
 local function solve(A, b)
+  if b == nil then return nil end
   local N = #A
   local x = {}
   for i = 1, N do x[i] = 0 end
@@ -62,25 +63,18 @@ local function solve(A, b)
     end
   end
 
-  for r = row, N do
-    local allZero = true
-    for c = 1, N do
-      if A[r][c] % modulo ~= 0 then
-        allZero = false
-        break
-      end
-    end
-    -- if allZero and b[r] % modulo ~= 0 then
-    --   print("No solution exists")
-    -- end
-  end
-
   for i = 1, N do x[i] = b[i] % modulo end
   return x
 end
 
 return {
   get = function(state)
-    return solve(buildMatrix(), state)
+    -- 🔹 Convert current puzzle state to "moves needed" form
+    local b = {}
+    for i = 1, #state do
+      b[i] = (3 - (state[i] % 3)) % 3
+    end
+
+    return solve(buildMatrix(), b)
   end
 }

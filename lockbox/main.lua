@@ -54,7 +54,7 @@ return {get = function(bolt)
         local state = imagetonumbers(this, event, firstvertex)
         local ax, ay, aw, ah, _, _ = event:vertexatlasdetails(firstvertex)
         if aw == objectsize and ah == objectsize then
-            if state ~= nil then 
+            if state ~= nil then
               this.solution = solver.get(state)
             end
             if this.solution == nil then return end
@@ -63,7 +63,7 @@ return {get = function(bolt)
                 local x, y = event:vertexxy(firstvertex)
                 local newx = x + ((index-1) % 5 ) * (objectsize + 6) - objecthalfsize
                 local newy = y + math.floor((index-1) / 5 ) * (objectsize + 6 ) - objecthalfsize
-                drawnumber(3 - this.solution[index], newx , newy)
+                drawnumber(this.solution[index], newx , newy)
               end
             end
           else 
