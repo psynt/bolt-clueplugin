@@ -29,52 +29,148 @@ local function buildMatrix()
   return A
 end
 
-local function solve(A, b)
-  if b == nil then return nil end
+local function inv_mod3(a)
+  if a % 3 == 1 then return 1 end
+  if a % 3 == 2 then return 2 end
+  error("no inverse for 0 mod 3")
+end
+
+-- Deterministic Gaussian elimination mod 3, preserving pivot order
+local function solveAll(A, b)
   local N = #A
-  local x = {}
-  for i = 1, N do x[i] = 0 end
-
+  local pivots = {}
+  local free_cols = {}
   local row = 1
-  for col = 1, N do
-    local pivot = row
-    while pivot <= N and A[pivot][col] % modulo == 0 do pivot = pivot + 1 end
 
-    if pivot <= N then
+  for col = 1, N do
+    local pivot = nil
+    for r = row, N do
+      if A[r][col] % modulo ~= 0 then
+        pivot = r
+        break
+      end
+    end
+
+    if pivot then
       A[row], A[pivot] = A[pivot], A[row]
       b[row], b[pivot] = b[pivot], b[row]
 
-      local inv = 1
-      while (A[row][col] * inv) % modulo ~= 1 do inv = inv + 1 end
+      local inv = inv_mod3(A[row][col])
       for j = col, N do A[row][j] = (A[row][j] * inv) % modulo end
-      if b[row] == nil then return nil end
       b[row] = (b[row] * inv) % modulo
 
       for r = 1, N do
         if r ~= row then
           local factor = A[r][col]
-          for c = col, N do
-            A[r][c] = (A[r][c] - factor * A[row][c]) % modulo
+          if factor ~= 0 then
+            for c = col, N do
+              A[r][c] = (A[r][c] - factor * A[row][c]) % modulo
+            end
+            b[r] = (b[r] - factor * b[row]) % modulo
           end
-          b[r] = (b[r] - factor * b[row]) % modulo
         end
       end
+
+      pivots[col] = row
       row = row + 1
+    else
+      table.insert(free_cols, col)
     end
   end
 
-  for i = 1, N do x[i] = b[i] % modulo end
-  return x
+  -- Build particular solution
+  local x0 = {}
+  for i = 1, N do x0[i] = 0 end
+  for col, r in pairs(pivots) do
+    x0[col] = b[r] % modulo
+  end
+
+  -- Build nullspace basis (one per free column)
+  local nullspace = {}
+  for _, free_col in ipairs(free_cols) do
+    local v = {}
+    for i = 1, N do v[i] = 0 end
+    v[free_col] = 1
+    for col, r in pairs(pivots) do
+      v[col] = (-A[r][free_col]) % modulo
+    end
+    table.insert(nullspace, v)
+  end
+
+  return x0, nullspace
+end
+
+-- Compare lexicographically (prefer earlier larger moves)
+local function preferTopLeft(a, b)
+  for i = 1, #a do
+    if a[i] ~= b[i] then
+      return a[i] > b[i]
+    end
+  end
+  return false
+end
+
+local function clone(v)
+  local c = {}
+  for i = 1, #v do c[i] = v[i] end
+  return c
+end
+
+local function sum(v) -- weighted
+  local s = 0
+  for i = 1, #v do
+    if v[i] == 1 then
+      s = s + 1        -- cost 1
+    elseif v[i] == 2 then
+      s = s + 1.5      -- slightly cheaper than 2 singles
+    end
+  end
+  return s
+end
+
+-- Enumerate all solutions and pick the globally best one
+local function findOptimalSolution(x0, nullspace)
+  local N = #x0
+  local d = #nullspace
+  if d == 0 then return x0 end
+
+  local best, bestScore
+
+  local function search(k, current)
+    if k > d then
+      local s = sum(current)
+      if (not best) or s < bestScore or (s == bestScore and preferTopLeft(current, best)) then
+        best = clone(current)
+        bestScore = s
+      end
+      return
+    end
+
+    local v = nullspace[k]
+    for coeff = 0, 2 do
+      local nextv = clone(current)
+      for i = 1, N do
+        nextv[i] = (nextv[i] + coeff * v[i]) % modulo
+      end
+      search(k + 1, nextv)
+    end
+  end
+
+  search(1, x0)
+  return best
+end
+
+local function solve(A, b)
+  local x0, nullspace = solveAll(A, b)
+  return findOptimalSolution(x0, nullspace)
 end
 
 return {
   get = function(state)
-    -- 🔹 Convert current puzzle state to "moves needed" form
     local b = {}
     for i = 1, #state do
       b[i] = (3 - (state[i] % 3)) % 3
     end
-
     return solve(buildMatrix(), b)
   end
 }

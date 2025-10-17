@@ -54,9 +54,8 @@ return {get = function(bolt)
         local state = imagetonumbers(this, event, firstvertex)
         local ax, ay, aw, ah, _, _ = event:vertexatlasdetails(firstvertex)
         if aw == objectsize and ah == objectsize then
-            if state ~= nil then
-              this.solution = solver.get(state)
-            end
+            if state == nil or #state ~= 25 then return end --the magic icon in the skills tab matches
+            this.solution = solver.get(state)
             if this.solution == nil then return end
             for index=1, #this.solution do
               if this.solution[index] ~= 0 then 
