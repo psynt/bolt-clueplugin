@@ -81,7 +81,7 @@ local function solveAll(A, b)
   -- Build particular solution
   local x0 = {}
   for i = 1, N do x0[i] = 0 end
-  for col, r in pairs(pivots) do
+  for col, r in ipairs(pivots) do
     x0[col] = b[r] % modulo
   end
 
@@ -91,7 +91,7 @@ local function solveAll(A, b)
     local v = {}
     for i = 1, N do v[i] = 0 end
     v[free_col] = 1
-    for col, r in pairs(pivots) do
+    for col, r in ipairs(pivots) do
       v[col] = (-A[r][free_col]) % modulo
     end
     table.insert(nullspace, v)
@@ -120,9 +120,9 @@ local function sum(v) -- weighted
   local s = 0
   for i = 1, #v do
     if v[i] == 1 then
-      s = s + 1        -- cost 1
+      s = s + (1 * i * 0.001)       -- cost 1
     elseif v[i] == 2 then
-      s = s + 1.5      -- slightly cheaper than 2 singles
+      s = s + (1.2 * i * 0.001)     -- cheaper than 2 singles
     end
   end
   return s

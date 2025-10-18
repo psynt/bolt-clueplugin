@@ -740,10 +740,10 @@ local points = {
       { x = 1352, y = 22, z = 5625, floor = 1 },
       { x = 1333, y = 12, z = 5608, floor = 1 },
       { x = 1374, y = 0 , z = 5549, floor = 1 },
+      { x = 1344, y = 12, z = 5651, floor = 1 },
+      { x = 1373, y = 13, z = 5634, floor = 1 },
 
       -- the ones below i've tried estimating from the wiki but i have yet to confirm their positions in game
-      { x = 1344, y = 14, z = 5656, floor = 1 },
-      { x = 1376, y = 13, z = 5634, floor = 1 },
       { x = 1371, y = 11, z = 5670, floor = 1 },
       { x = 1433, y = 14, z = 5693, floor = 1 },
       { x = 1370, y = 13, z = 5729, floor = 1 },
