@@ -264,21 +264,12 @@ return {get = function(bolt)
       return create(bolt, "ardougne")
     end,
     ["\xff\xff\xff\x44\xff\xff\xff\x44\xff\xff\xff\xee\xff\xff\xff\xee\xff\xff\xff\x77\xff\xff\xff\x77\xff\xff\xff\x11\xff\xff\xff\x11\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01\x00"] = function (bolt, event)
-      -- 's' => 'Dorge[s]h-Kaan' OR 'The de[s]ert, east of the Elid and north of Nardah'
-      -- check the width of the third letter: r=8 e=14
-      local _, _, w, _, _, _ = event:vertexatlasdetails((event:verticesperimage() * 4) + 1)
-      if w == 8 then return create(bolt, "dorgeshkaan") end
-      
-      -- width of 4th letter?
-      local _, _, w4, _, _, _ = event:vertexatlasdetails((event:verticesperimage() * 6) + 1)
-      print(w4)
-      if w4 == 12 then 
-        print("lost grove")
-        local x,y,z = bolt.playerposition():get()
-        print("{ x = " .. math.floor(x/512) .. ", y = " .. math.floor(y / 512) .. ", z = " .. math.floor(z / 512) .. ", floor = 1 },")
-        return create(bolt, "lostgrove")
-      end
-      if w == 14 then return create(bolt, "eastdesert") end
+      -- 's' => 'Dorge[s]h-Kaan' OR 'The Lo[s]t Grove' OR 'The de[s]ert, east of the Elid and north of Nardah'
+      -- check the width of the ninth letter: K=14 r=8 t=10
+      local _, _, w, _, _, _ = event:vertexatlasdetails((event:verticesperimage() * 16) + 1)
+      if w == 14 then return create(bolt, "dorgeshkaan") end
+      if w == 8 then return create(bolt, "lostgrove") end
+      if w == 10 then return create(bolt, "eastdesert") end
       return nil
     end,
     ["\x00\x00\x01\x00\x00\x00\x01\x00\xff\xff\xff\xdd\xff\xff\xff\xdd\xff\xff\xff\x22\xff\xff\xff\x22\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01\x00"] = function (bolt, event)

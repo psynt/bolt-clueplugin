@@ -1,6 +1,16 @@
 local n = 5
 local modulo = 3
 
+-- lexicographic key for a vector (used to determinise nullspace ordering)
+local function vec_key(v)
+  local s = ""
+  for i = 1, #v do
+    s = s .. string.format("%02d", v[i])  -- small, fixed-width
+  end
+  return s
+end
+
+
 local function idx(x, y)
   return (x - 1) * n + y
 end
@@ -100,7 +110,7 @@ local function solveAll(A, b)
   return x0, nullspace
 end
 
--- Compare lexicographically (prefer earlier larger moves)
+-- -- Compare lexicographically (prefer earlier larger moves)
 local function preferTopLeft(a, b)
   for i = 1, #a do
     if a[i] ~= b[i] then
@@ -116,29 +126,40 @@ local function clone(v)
   return c
 end
 
-local function sum(v) -- weighted
+local function sum(v, micro_bias) -- weighted
   local s = 0
   for i = 1, #v do
     if v[i] == 1 then
-      s = s + (1 * i * 0.001)       -- cost 1
+      s = s + (1 * i * 0.001) + micro_bias[i]       -- cost 1
     elseif v[i] == 2 then
-      s = s + (1.2 * i * 0.001)     -- cheaper than 2 singles
+      s = s + (1.2 * i * 0.001) + micro_bias[i]    -- cheaper than 2 singles
     end
   end
   return s
 end
 
--- Enumerate all solutions and pick the globally best one
 local function findOptimalSolution(x0, nullspace)
   local N = #x0
   local d = #nullspace
   if d == 0 then return x0 end
 
-  local best, bestScore
+  -- deterministically order nullspace basis by their lexical key (so enumeration stable)
+  table.sort(nullspace, function(a, b) return vec_key(a) < vec_key(b) end)
+
+  local best, bestScore = nil, math.huge
+
+  -- precompute per-index micro-bias to ensure strict ordering
+  local micro_bias = {}
+  for i = 1, N do micro_bias[i] = i * 1e-6 end
 
   local function search(k, current)
+    -- early pruning: if partial score already >= bestScore, abort
+    local ps = sum(current, micro_bias)
+    if best and ps >= bestScore then return end
+
     if k > d then
-      local s = sum(current)
+      -- full candidate: compute exact weighted score (same as partial_score)
+      local s = ps
       if (not best) or s < bestScore or (s == bestScore and preferTopLeft(current, best)) then
         best = clone(current)
         bestScore = s
