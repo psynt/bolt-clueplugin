@@ -28,7 +28,6 @@ return {
         local verticesperimage = event:verticesperimage()
 
         local function imagetonumbers(this, event, firstvertex)
-          -- print("entering image to numbers")
           this.filled_in_positions = {}
           this.filled_in = 0
           local state = {}
@@ -39,7 +38,7 @@ return {
             local ax, ay, aw, ah, _, _ = event:vertexatlasdetails(i)
             if correctevent(aw, ah) then
               local currentx, currenty = event:vertexxy(i)
-              local f = decoder.get(event, ax, ay, aw * 4)
+              local f = decoder.get(event, ax, ay)
               if f ~= nil then
                 newfirstvertex = i
                 this.left_x = currentx
@@ -54,7 +53,7 @@ return {
             local ax, ay, aw, ah, _, _ = event:vertexatlasdetails(i)
             if correctevent(aw, ah) then
               local currentx, currenty = event:vertexxy(i)
-              local f = decoder.get(event, ax, ay, aw * 4)
+              local f = decoder.get(event, ax, ay)
               if f ~= nil then
                 if currentx < this.left_x then
                   this.left_x = currentx
