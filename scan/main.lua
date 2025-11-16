@@ -268,7 +268,11 @@ return {get = function(bolt)
       -- check the width of the ninth letter: K=14 r=8 t=10
       local _, _, w, _, _, _ = event:vertexatlasdetails((event:verticesperimage() * 16) + 1)
       if w == 14 then return create(bolt, "dorgeshkaan") end
-      if w == 8 then return create(bolt, "lostgrove") end
+      if w == 8 then 
+        local x,y,z = bolt.playerposition():get()
+        print("{ x = " .. math.floor(x/512) .. ", y = " .. math.floor(y / 512) .. ", z = " .. math.floor(z / 512) .. ", floor = 1 },")
+        return create(bolt, "lostgrove")
+        end
       if w == 10 then return create(bolt, "eastdesert") end
       return nil
     end,

@@ -728,7 +728,6 @@ local points = {
   },
   lostgrove = {
     points = {
-      -- these seen to be in the correct spot
       { x = 1326, y = 13, z = 5664, floor = 1 },
       { x = 1390, y = 11, z = 5615, floor = 1 },
       { x = 1328, y = 13, z = 5693, floor = 1 },
@@ -743,6 +742,7 @@ local points = {
       { x = 1344, y = 12, z = 5651, floor = 1 },
       { x = 1373, y = 13, z = 5634, floor = 1 },
       { x = 1375, y = 11, z = 5687, floor = 1 },
+      { x = 1375, y = 12, z = 5731, floor = 1 },
     },
     range = 14,
   }

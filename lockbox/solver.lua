@@ -132,7 +132,7 @@ local function sum(v, micro_bias) -- weighted
     if v[i] == 1 then
       s = s + (1 * i * 0.001) + micro_bias[i]       -- cost 1
     elseif v[i] == 2 then
-      s = s + (1.2 * i * 0.001) + micro_bias[i]    -- cheaper than 2 singles
+      s = s + (1.5 * i * 0.001) + micro_bias[i]    -- cheaper than 2 singles
     end
   end
   return s
